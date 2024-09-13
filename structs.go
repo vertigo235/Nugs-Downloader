@@ -34,6 +34,8 @@ type Args struct {
 	ForceVideo   bool     `arg:"--force-video" help:"Forces video when it co-exists with audio in release URLs."`
 	SkipVideos   bool     `arg:"--skip-videos" help:"Skips videos in artist URLs."`
 	SkipChapters bool     `arg:"--skip-chapters" help:"Skips chapters for videos."`
+    FileMode     string   `arg:"--file-mode" help:"Set file creation mode (e.g., 0644)"`
+    DirMode      string   `arg:"--dir-mode" help:"Set directory creation mode (e.g., 0755)"`
 }
 
 type Auth struct {

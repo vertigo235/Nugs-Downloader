@@ -152,7 +152,7 @@ func getScriptDir() (string, error) {
 
 func readTxtFile(path string) ([]string, error) {
 	var lines []string
-	f, err := os.OpenFile(path, os.O_RDONLY, 0755)
+	f, err := os.OpenFile(path, os.O_RDONLY, cfg.FileMode)
 	if err != nil {
 		return nil, err
 	}
@@ -248,6 +248,24 @@ func parseCfg() (*Config, error) {
 	cfg.ForceVideo = args.ForceVideo
 	cfg.SkipVideos = args.SkipVideos
 	cfg.SkipChapters = args.SkipChapters
+	if args.FileMode != "" {
+        mode, err := strconv.ParseUint(args.FileMode, 8, 32)
+        if err != nil {
+            handleErr("Invalid file mode.", err, true)
+        }
+        cfg.FileMode = os.FileMode(mode)
+    } else {
+        cfg.FileMode = 0755 // Default
+    }
+    if args.DirMode != "" {
+        mode, err := strconv.ParseUint(args.DirMode, 8, 32)
+        if err != nil {
+            handleErr("Invalid directory mode.", err, true)
+        }
+        cfg.DirMode = os.FileMode(mode)
+    } else {
+        cfg.DirMode = 0775 // Default
+    }
 	return cfg, nil
 }
 
@@ -271,8 +289,8 @@ func parseArgs() *Args {
 }
 
 func makeDirs(path string) error {
-	err := os.MkdirAll(path, 0755)
-	return err
+    err := os.MkdirAll(path, cfg.DirMode)
+    return err
 }
 
 func fileExists(path string) (bool, error) {
@@ -609,7 +627,7 @@ func queryQuality(streamUrl string) *Quality {
 }
 
 func downloadTrack(trackPath, _url string) error {
-	f, err := os.OpenFile(trackPath, os.O_CREATE|os.O_WRONLY, 0755)
+	f, err := os.OpenFile(trackPath, os.O_CREATE|os.O_WRONLY, cfg.FileMode)
 	if err != nil {
 		return err
 	}
@@ -1164,7 +1182,7 @@ func getSegUrls(manifestUrl, query string) ([]string, error) {
 }
 
 func downloadVideo(videoPath, _url string) error {
-	f, err := os.OpenFile(videoPath, os.O_CREATE|os.O_WRONLY, 0755)
+	f, err := os.OpenFile(videoPath, os.O_CREATE|os.O_WRONLY, cfg.FileMode)
 	if err != nil {
 		return err
 	}
@@ -1208,7 +1226,7 @@ func downloadVideo(videoPath, _url string) error {
 }
 
 func downloadLstream(videoPath, baseUrl string, segUrls []string) error {
-	f, err := os.OpenFile(videoPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0755)
+	f, err := os.OpenFile(videoPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, cfg.FileMode)
 	if err != nil {
 		return err
 	}
@@ -1306,7 +1324,7 @@ func getNextChapStart(chapters []interface{}, idx int) float64 {
 
 
 func writeChapsFile(chapters []interface{}, dur int) error {
-	f, err := os.OpenFile(chapsFileFname, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0755)
+	f, err := os.OpenFile(chapsFileFname, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, cfg.FileMode)
 	if err != nil {
 		return err
 	}
