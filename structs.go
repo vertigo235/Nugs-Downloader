@@ -24,6 +24,8 @@ type Config struct {
 	ForceVideo      bool
 	SkipVideos		bool
 	SkipChapters	bool
+	FileMode        os.FileMode
+    DirMode         os.FileMode
 }
 
 type Args struct {
